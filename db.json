@@ -1,0 +1,19 @@
+{
+  "arrayOfProducts": [
+    {
+      "id": 3,
+      "title": "CATE RIGID BAG123123",
+      "price": 94.5
+    },
+    {
+      "title": "qwe",
+      "price": "qweqweqwe",
+      "id": 4
+    },
+    {
+      "title": "qweqweqw",
+      "price": "eqweqweq",
+      "id": 5
+    }
+  ]
+}

@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/app.css">
+
+</head>
+<body style="font-family: -apple-system" class="m-5">
+
+<div id="app" >
+
+    <div class="container">
+
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="recipient-name" class="col-form-label">Ürün Adı:</label>
+                                <input type="text" class="form-control" id="recipient-name" v-model="formItem.title">
+                            </div>
+                            <div class="form-group">
+                                <label for="recipient-name" class="col-form-label">Tutar:</label>
+                                <input type="text" class="form-control" id="recipient-name" v-model="formItem.price">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="setChoice('')">Close</button>
+
+                        <button type="button" class="btn btn-primary" @click="newItem" v-if="this.addOrDelete === 'ekle' ">Save</button>
+
+                        <button type="button" class="btn btn-primary" v-else @click="newItem(formItem.id)">edit</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <h2>Ürünler {{list.length}}</h2>
+        <h3 v-if="!list.length">Kayıt Yok</h3>
+
+        <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo" @click="setChoice('ekle')">Ekle</button>
+
+        <table class="table table-bordered table-hover">
+            <td>Index:</td>
+            <td>Product Id:</td>
+            <td> Product Name:</td>
+            <td> Price:</td>
+
+            <tr v-for="(item,index) in list ">
+                <td>{{index}}</td>
+                <td>{{item.id}}</td>
+                <td>{{item.title}}</td>
+                <td>{{item.price}} £</td>
+                <td>
+                    <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#exampleModal" @click="editItem(item.id)">Edit</button>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-success" @click="deleteItem(item.id)">Delete</button>
+                </td>
+            </tr>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+
+<script src="assets/js/vue.js"></script>
+
+<script src="assets/js/axios.min.js"></script>
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
+<script src="assets/js/toastr.min.js"></script>
+<script src="assets/js/sweetalert2.all.js"></script>
+
+
+
+
+<script>
+
+
+    const app = new Vue({
+
+        el : '#app',
+
+        data:{
+            list : [],
+            formItem :{},
+            addOrDelete : ''
+
+        },
+        methods : {
+            getProducs(){
+                axios.get('http://localhost:3000/arrayOfProducts')
+                .then((res)=>{
+                    this.list = res.data;
+                })
+            },
+            newItem(id){
+                if(id>0){
+                    axios.put('http://localhost:3000/arrayOfProducts/'+id,this.formItem)
+                    .then((res)=>{
+                        this.getProducs();
+                        this.formItem = {};
+                        $('#exampleModal').modal('hide');
+                    });
+                }
+                else{
+                    axios.post('http://localhost:3000/arrayOfProducts',this.formItem)
+                        .then((res)=>{
+                            this.getProducs();
+                            console.log(res);
+                            this.formItem = {};
+                        })
+                    $('#exampleModal').modal('hide');
+                }
+            },
+            editItem(id){
+                axios.get('http://localhost:3000/arrayOfProducts/'+id)
+                .then((res)=>{
+                    this.formItem = res.data;
+                });
+            },
+            setChoice(select){
+                this.addOrDelete = select;
+                this.formItem = {};
+            },
+            deleteItem(id){
+                axios.delete('http://localhost:3000/arrayOfProducts/'+id)
+                .then((res)=>{
+                    this.getProducs();
+                    this.formItem = {};
+                });
+
+            }
+
+        },
+        created() {
+            this.getProducs();
+        }
+
+
+    })
+
+
+
+</script>
+
+</body>
+</html>
